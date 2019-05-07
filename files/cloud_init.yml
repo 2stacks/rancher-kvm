@@ -1,0 +1,24 @@
+#cloud-config
+groups:
+  - ${user_name}
+  - docker
+users:
+  - name: ${user_name}
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    primary-group: ${user_name}
+    groups: sudo, docker
+    lock_passwd: true
+    ssh-authorized-keys:
+      - ${ssh_authorized-key}
+growpart:
+  mode: auto
+  devices: ['/']
+runcmd:
+  - echo net.ipv6.conf.all.disable_ipv6 = 1 >> /etc/sysctl.conf
+  - echo net.ipv6.conf.default.disable_ipv6 = 1 >> /etc/sysctl.conf
+  - echo net.ipv6.conf.lo.disable_ipv6 = 1 >> /etc/sysctl.conf
+  - sysctl -p
+package_upgrade: true
+packages:
+  - qemu-guest-agent
